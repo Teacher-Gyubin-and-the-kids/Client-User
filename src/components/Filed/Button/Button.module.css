@@ -1,0 +1,19 @@
+.wrapper{
+  width: 488px;
+  height: 72px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.wrapper button{
+  display: flex;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  background-color: #00CC87;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: bold;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,0 +1,42 @@
+.wrapper {
+  width: 100%;
+  height: 197px;
+  position: relative;
+}
+
+.backButtonWrapper {
+  display: flex;
+  position: absolute;
+  width: 100%;
+  height: 72px;
+  margin-top: 25px;
+  align-items: center;
+}
+
+.backButtonBox {
+  display: flex;
+  width: 24px;
+  height: 48px;
+  margin-left: 53px;
+  cursor: pointer;
+}
+
+.authHeaderImgBox {
+  display: flex;
+  width: 100%;
+  height: 92px;
+  justify-content: center;
+}
+
+.authHeaderTitleBox {
+  display: flex;
+  width: 100%;
+  margin-top: 40px;
+  justify-content: center;
+}
+
+.authHeaderTitleBox p {
+  font-size: 40px;
+  font-weight: bold;
+  color: #00CC87;
+}
