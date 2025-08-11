@@ -1,8 +1,6 @@
 import S from './Signup.module.css';
-import Input from '@/components/Filed/Input/Input';
-import AuthHeader from '@/components/AuthHeader/AuthHeader';
+import { Button, Input, Header } from '../components/index';
 import signupImg from '@/assets/signup.png';
-import Button from '@/components/Filed/Button/Button';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -37,7 +35,7 @@ export default function Signup() {
 
   return (
     <>
-      <AuthHeader marginTop="65px" width="99px" height="92px" title="회원가입" img={signupImg} />
+      <Header marginTop="65px" width="99px" height="92px" title="회원가입" img={signupImg} />
       <div className={S.wrapper}>
         <form onSubmit={handleSignup}>
           {inputFields.map((field) => (

@@ -1,8 +1,6 @@
 import S from './Signin.module.css';
-import Input from '@/components/Filed/Input/Input';
-import AuthHeader from '@/components/AuthHeader/AuthHeader';
+import { Button, Input, Header } from '../components/index';
 import signinImg from '@/assets/login.png';
-import Button from '@/components/Filed/Button/Button';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -33,7 +31,7 @@ export default function Signup() {
 
   return (
     <>
-      <AuthHeader marginTop="65px" width="107px" height="100px" title="로그인" img={signinImg} />
+      <Header marginTop="65px" width="107px" height="100px" title="로그인" img={signinImg} />
       <div className={S.wrapper}>
         <form onSubmit={handleLogin}>
           {inputFields.map((field) => (
