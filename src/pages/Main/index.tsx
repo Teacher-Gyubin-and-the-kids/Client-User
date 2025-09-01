@@ -1,12 +1,11 @@
 import Aside from '@/components/Aside';
-import CalendarSection from '../../../components/Calendar/Calendar';
+import CalendarSection from '../../components/Calendar/Calendar';
 import { useAside } from './useAside';
 import * as styles from './style.css';
 
 const BookingMain = () => {
   const {
     selectedDate,
-    selectedTime,
     currentDate,
     currentMonthText,
     bookingData,
@@ -17,21 +16,13 @@ const BookingMain = () => {
   return (
     <div className={styles.booking.container}>
       {/* 왼쪽 예약 정보 사이드바 */}
-      {/* <Aside
+      <Aside
         type="booking"
         position="left"
         data={bookingData}
         actions={{
           onEdit: actions.handleEditBooking,
           onCancel: actions.handleCancelBooking
-        }}
-      /> */}
-
-      <Aside
-        type="login"
-        position="left"
-        data={{
-          message: "로그인 후 상담 이용이 가능합니다.",
         }}
       />
 

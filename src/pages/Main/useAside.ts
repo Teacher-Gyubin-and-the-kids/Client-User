@@ -42,7 +42,7 @@ export const useAside = (
       today.getMonth() === currentDate.getMonth();
     return isCurrentMonth ? today.getDate() : null;
   });
-  const [selectedTime, setSelectedTime] = useState("09:30");
+  const [selectedTime, setSelectedTime] = useState("08:40 ~ 09:30");
   const timeSlots = useMemo(
     () => [
       "08:40 ~ 09:30",
