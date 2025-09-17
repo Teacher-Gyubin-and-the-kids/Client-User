@@ -95,13 +95,15 @@ const AdminPage: React.FC = () => {
     );
   };
 
-  const getSlotsForDate = (): TimeSlot[] => {
-    if (!selectedDate) return [];
+  // ISO 형식 날짜 만들기
+  const getDateStr = (): string | null => {
+    if (!selectedDate) return null;
+    return `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`;
+  };
 
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const day = String(selectedDate).padStart(2, "0");
-    const dateStr = `${year}-${month}-${day}`;
+  const getSlotsForDate = (): TimeSlot[] => {
+    const dateStr = getDateStr();
+    if (!dateStr) return [];
 
     const reserved = advices
       .filter((a) => a.desiredDate === dateStr)
@@ -142,7 +144,7 @@ const AdminPage: React.FC = () => {
         />
 
         <TimeSlotList
-          selectedDate={selectedDateText === "날짜를 선택해주세요" ? null : selectedDateText}
+          selectedDate={getDateStr()}   // ✅ 이제 ISO 날짜로 내려줌
           timeSlots={getSlotsForDate()}
           onTimeSlotSelect={handleTimeSlotSelect}
         />

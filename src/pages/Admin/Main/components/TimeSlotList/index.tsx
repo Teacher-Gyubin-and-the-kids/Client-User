@@ -27,9 +27,25 @@ const TimeSlotList: React.FC<TimeSlotListProps> = ({ selectedDate, timeSlots, on
         return "승인됨";
       case "rejected":
         return "거부됨";
+      case "expired":
+        return "만료됨";
       default:
         return "";
     }
+  };
+
+  const now = new Date();
+
+  const isExpired = (dateStr: string, timeStr: string) => {
+    // "08:40 ~ 09:30" → "09:30"
+    const endTime = timeStr.split("~")[1]?.trim();
+    console.log(endTime);
+    if (!endTime) return false;
+
+    // dateStr: "2025-09-17"
+    const slotDateTime = new Date(`${dateStr}T${endTime}:00`);
+    console.log(slotDateTime);
+    return slotDateTime <= now;
   };
 
   if (!selectedDate) {
@@ -48,19 +64,26 @@ const TimeSlotList: React.FC<TimeSlotListProps> = ({ selectedDate, timeSlots, on
       </div>
 
       <div className={styles.timeSlotList.list}>
-        {timeSlots.map((timeSlot) => (
-          <button
-            key={timeSlot.time}
-            onClick={() => onTimeSlotSelect(timeSlot)}
-            className={`${styles.timeSlotList.timeSlot} ${statusStyles[timeSlot.status]}`}
-            disabled={timeSlot.status === "available" || timeSlot.status === "expired"}
-          >
-            <div className={styles.timeSlotList.timeSlotContent}>
-              <span className={styles.timeSlotList.timeText}>{timeSlot.time}</span>
-              <span className={styles.timeSlotList.statusText}>{getStatusText(timeSlot.status)}</span>
-            </div>
-          </button>
-        ))}
+        {timeSlots.map((timeSlot) => {
+          const expired = isExpired(selectedDate, timeSlot.time);
+          const effectiveStatus: BookingStatus = expired ? "expired" : timeSlot.status;
+
+          return (
+            <button
+              key={timeSlot.time}
+              onClick={() => onTimeSlotSelect(timeSlot)}
+              className={`${styles.timeSlotList.timeSlot} ${statusStyles[effectiveStatus]}`}
+              disabled={effectiveStatus === "available" || effectiveStatus === "expired"}
+            >
+              <div className={styles.timeSlotList.timeSlotContent}>
+                <span className={styles.timeSlotList.timeText}>{timeSlot.time}</span>
+                <span className={styles.timeSlotList.statusText}>
+                  {getStatusText(effectiveStatus)}
+                </span>
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
