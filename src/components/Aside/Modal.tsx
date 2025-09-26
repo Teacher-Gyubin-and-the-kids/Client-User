@@ -1,76 +1,80 @@
-import React, { useState } from 'react';
-import { useRequestAdvice } from '@/services/advice/advice.mutation';
-import { type AdviceType } from '@/types';
-import * as styles from './style.css';
+import React, { useState } from "react";
+import { useRequestAdvice } from "@/services/advice/advice.mutation";
+import { type AdviceType } from "@/types";
+import * as styles from "./style.css";
+import { Toastify } from "../Toastify";
 
-interface AdviceBookingModalProps {
+interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedDate: string;
   selectedTime: string;
 }
 
-const AdviceBookingModal: React.FC<AdviceBookingModalProps> = ({
+const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   selectedDate,
-  selectedTime
+  selectedTime,
 }) => {
-  const [formData, setFormData] = useState({
-    content: '',
-    studentNumber: '',
-    fullName: ''
-  });
+  const [content, setContent] = useState("");
 
   const { mutate: requestAdvice, isPending } = useRequestAdvice();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+  };
+
+  const showToast = (message: string) => {
+    Toastify({ content: message, type: "info" });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    if (!content.trim()) {
+      showToast("상담 내용을 입력해주세요.");
+      return;
+    }
+
     const adviceData: AdviceType = {
       desiredDate: selectedDate,
       desiredTime: selectedTime,
-      content: formData.content,
-      studentNumber: parseInt(formData.studentNumber),
-      fullName: formData.fullName
+      content: content.trim(),
     };
 
     requestAdvice(adviceData, {
       onSuccess: () => {
-        alert('상담 예약이 완료되었습니다!');
-        onClose();
-        // 폼 초기화
-        setFormData({
-          content: '',
-          studentNumber: '',
-          fullName: ''
-        });
+        showToast("상담 예약이 완료되었습니다!");
+          onClose();
+        setContent("");
       },
       onError: (error) => {
-        alert('예약에 실패했습니다. 다시 시도해주세요.');
-        console.error('Booking error:', error);
-      }
+        if(error.message.includes("409")) {
+          showToast("이미 예약된 시간입니다. \n다른 시간을 선택해주세요.");
+        }
+      },
     });
+  };
+
+  const handleClose = () => {
+    setContent("");
+    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className={styles.modal.overlay} onClick={onClose}>
-      <div className={styles.modal.container} onClick={(e) => e.stopPropagation()}>
+    <div className={styles.modal.overlay} onClick={handleClose}>
+      <div
+        className={styles.modal.container}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className={styles.modal.header}>
           <h2 className={styles.modal.title}>상담 예약</h2>
-          <button 
+          <button
             className={styles.modal.closeButton}
-            onClick={onClose}
+            onClick={handleClose}
             type="button"
           >
             ×
@@ -78,43 +82,16 @@ const AdviceBookingModal: React.FC<AdviceBookingModalProps> = ({
         </div>
 
         <div className={styles.modal.dateTimeInfo}>
-          <p className={styles.modal.dateTimeText}><strong>예약 날짜:</strong> {selectedDate}</p> &nbsp;
-          <p className={styles.modal.dateTimeText}><strong>예약 시간:</strong> {selectedTime}</p>
+          <p className={styles.modal.dateTimeText}>
+            <strong>예약 날짜:</strong> {selectedDate}
+          </p>{" "}
+          &nbsp;
+          <p className={styles.modal.dateTimeText}>
+            <strong>예약 시간:</strong> {selectedTime}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.modal.form}>
-          <div className={styles.modal.formGroup}>
-            <label htmlFor="fullName" className={styles.modal.label}>
-              이름 <span className={styles.modal.required}>*</span>
-            </label>
-            <input
-              type="text"
-              id="fullName"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleInputChange}
-              className={styles.modal.input}
-              required
-              placeholder="이름을 입력하세요"
-            />
-          </div>
-
-          <div className={styles.modal.formGroup}>
-            <label htmlFor="studentNumber" className={styles.modal.label}>
-              학번 <span className={styles.modal.required}>*</span>
-            </label>
-            <input
-              type="number"
-              id="studentNumber"
-              name="studentNumber"
-              value={formData.studentNumber}
-              onChange={handleInputChange}
-              className={styles.modal.input}
-              required
-              placeholder="학번을 입력하세요"
-            />
-          </div>
-
           <div className={styles.modal.formGroup}>
             <label htmlFor="content" className={styles.modal.label}>
               상담 내용 <span className={styles.modal.required}>*</span>
@@ -122,19 +99,19 @@ const AdviceBookingModal: React.FC<AdviceBookingModalProps> = ({
             <textarea
               id="content"
               name="content"
-              value={formData.content}
+              value={content}
               onChange={handleInputChange}
               className={styles.modal.textarea}
               required
-              placeholder="상담받고 싶은 내용을 자세히 적어주세요"
-              rows={4}
+              placeholder="상담받고 싶은 내용을 자세히 적어주세요 (2줄 이상)"
+              rows={6}
             />
           </div>
 
           <div className={styles.modal.buttonGroup}>
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className={styles.modal.cancelButton}
               disabled={isPending}
             >
@@ -143,9 +120,9 @@ const AdviceBookingModal: React.FC<AdviceBookingModalProps> = ({
             <button
               type="submit"
               className={styles.modal.confirmButton}
-              disabled={isPending}
+              disabled={isPending || !content.trim()}
             >
-              {isPending ? '예약 중...' : '예약 확인'}
+              {isPending ? "예약 중..." : "예약 확인"}
             </button>
           </div>
         </form>
@@ -154,4 +131,4 @@ const AdviceBookingModal: React.FC<AdviceBookingModalProps> = ({
   );
 };
 
-export default AdviceBookingModal;
+export default Modal;

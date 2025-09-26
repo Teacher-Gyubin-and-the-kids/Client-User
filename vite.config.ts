@@ -15,4 +15,17 @@ export default defineConfig({
       "@": resolve(__dirname, "src"),
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://172.28.7.18:8080",
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/api/, ""),
+        secure: false,
+      }
+    },
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: true,
+  }
 });

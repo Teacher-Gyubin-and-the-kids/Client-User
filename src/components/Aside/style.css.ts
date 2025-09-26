@@ -6,117 +6,99 @@ export const aside = {
     width: "25%",
     background: theme.white,
     padding: "24px",
-    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
-    display: "flex",
-    flexDirection: "column",
+    boxShadow:
+      "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+    ...flex.COLUMN_FLEX,
     height: "100%",
   }),
-  
+
   leftPosition: style({
     ...flex.COLUMN_FLEX,
   }),
-  
+
   rightPosition: style({
     overflowY: "auto",
   }),
-  
+
   header: style({
     marginBottom: "24px",
   }),
-  
+
   title: style({
     ...font.H5,
     color: theme.text,
     marginBottom: "8px",
   }),
 
-  login: style({
-    ...flex.COLUMN_CENTER,
-    gap: "19px",
-    marginTop: "46px",
-  }),
-
-  loginTitle: style({
-    ...font.H6,
-    color: theme.gray,
-    marginBottom: "8px",
-  }),
-
-  goToLogin: style({
-    ...flex.CENTER,
-    ...font.p2,
-    color: theme.primary,
-    cursor: "pointer",
-    ":hover": {
-      color: "#00b377",
-      textDecoration: "underline",
-    },
-  }),
-  
-  subtitle: style({
-    ...font.p3,
-    color: theme.gray,
-  }),
-  
   sectionTitle: style({
     ...font.H6,
     color: theme.text,
     marginBottom: "16px",
   }),
-  
+
   dateText: style({
     ...font.p3,
     color: theme.gray,
     marginTop: "8px",
   }),
-  
+
+  bookingInfo: style({
+    ...flex.COLUMN_FLEX,
+    gap: "16px",
+  }),
+
+  loginPrompt: style({
+    ...flex.COLUMN_CENTER,
+    gap: "16px",
+    marginTop: "32px",
+    padding: "24px 16px",
+    textAlign: "center",
+  }),
+
+  loginMessage: style({
+    ...font.H5,
+    color: "#9F9F9F",
+    lineHeight: "1",
+    marginTop: "18px",
+  }),
+
   buttonGroup: style({
-    display: "flex",
-    gap: "8px",
-    marginTop: "auto",
+    ...flex.COLUMN_CENTER,
+    marginTop: "auto",  
   }),
-  
-  primaryButton: style({
-    flex: 1,
-    backgroundColor: theme.primary,
-    color: theme.white,
-    padding: "8px 16px",
+
+  loginText: style({
+    color: theme.primary,
+    textDecoration: "underline",
+    ...font.H6,
+  }),
+
+  editButton: style({
+    width: "100%",
+    textAlign: "left",
+    padding: "12px 16px",
     borderRadius: "6px",
-    border: "none",
-    ...font.btn2,
-    cursor: "pointer",
-    transition: "background-color 0.2s ease",
-    
-    ":hover": {
-      backgroundColor: "#00b377",
-    },
-  }),
-  
-  secondaryButton: style({
-    flex: 1,
-    backgroundColor: "#d1d5db",
+    border: "1px solid #d1d5db",
+    background: "#f3f4f6",
     color: theme.text,
-    padding: "8px 16px",
-    borderRadius: "6px",
-    border: "none",
-    ...font.btn2,
+    ...font.p2,
     cursor: "pointer",
-    transition: "background-color 0.2s ease",
-    
+    transition: "all 0.2s ease",
+
     ":hover": {
-      backgroundColor: theme.gray,
+      backgroundColor: "#e5e7eb",
+      borderColor: "#9ca3af",
     },
   }),
-  
+
   timeSlotList: style({
-    display: "flex",
-    flexDirection: "column",
+    ...flex.COLUMN_FLEX,
     gap: "8px",
     flex: 1,
     overflowY: "auto",
     marginBottom: "16px",
     paddingRight: "4px",
-    
+
     "::-webkit-scrollbar": {
       width: "6px",
     },
@@ -129,7 +111,7 @@ export const aside = {
       borderRadius: "3px",
     },
   }),
-  
+
   timeSlot: style({
     width: "100%",
     textAlign: "left",
@@ -142,16 +124,16 @@ export const aside = {
     cursor: "pointer",
     transition: "all 0.2s ease",
   }),
-  
+
   selectedTimeSlot: style({
     borderColor: theme.primary,
     backgroundColor: "#ecfdf5",
     color: theme.text,
   }),
-  
+
   bookingButton: style({
     width: "100%",
-    backgroundColor: theme.primary,
+    background: theme.primary,
     color: theme.white,
     padding: "12px 16px",
     borderRadius: "6px",
@@ -159,10 +141,22 @@ export const aside = {
     ...font.btn2,
     cursor: "pointer",
     transition: "background-color 0.2s ease",
-    
+
     ":hover": {
       backgroundColor: "#00b377",
     },
+  }),
+
+  bookingButtonDisabled: style({
+    width: "100%",
+    background: "#d1d5db",
+    color: "#9ca3af",
+    padding: "12px 16px",
+    borderRadius: "6px",
+    border: "none",
+    ...font.btn2,
+    cursor: "not-allowed",
+    opacity: 0.6,
   }),
 };
 
@@ -186,12 +180,12 @@ export const modal = {
     maxWidth: "500px",
     maxHeight: "80vh",
     overflowY: "auto",
-    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    boxShadow:
+      "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
   }),
 
   header: style({
     ...flex.BETWEEN,
-    alignItems: "center",
     marginBottom: "20px",
     paddingBottom: "16px",
     borderBottom: "1px solid #e5e7eb",
@@ -209,8 +203,8 @@ export const modal = {
     fontSize: "24px",
     color: theme.gray,
     cursor: "pointer",
-    padding: "4px",
     lineHeight: 1,
+    padding: "4px 8px",
     borderRadius: "4px",
     transition: "all 0.2s",
 
@@ -250,7 +244,7 @@ export const modal = {
   }),
 
   required: style({
-    color: "#ef4444",
+    color: theme.red,
   }),
 
   input: style({
@@ -269,6 +263,22 @@ export const modal = {
     "::placeholder": {
       color: theme.gray,
     },
+  }),
+
+  inputError: style({
+    borderColor: theme.red,
+
+    ":focus": {
+      outline: "none",
+      borderColor: theme.red,
+      boxShadow: `0 0 0 3px ${theme.red}20`,
+    },
+  }),
+
+  errorText: style({
+    ...font.p4,
+    color: theme.red,
+    marginTop: "4px",
   }),
 
   textarea: style({
@@ -293,13 +303,9 @@ export const modal = {
   }),
 
   buttonGroup: style({
-    display: "flex",
-    flexDirection: "row",
-    gap: "12px",
-    justifyContent: "flex-end",
-    marginTop: "24px",
-    paddingTop: "20px",
-    borderTop: "1px solid #e5e7eb",
+    ...flex.BETWEEN,
+    width: "100%",
+    marginTop: "auto",
   }),
 
   cancelButton: style({

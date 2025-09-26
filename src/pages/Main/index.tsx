@@ -1,32 +1,30 @@
 import Aside from '@/components/Aside';
-import CalendarSection from '../../components/Calendar/Calendar';
+import CalendarSection from '@/components/Calendar/Calendar';
+import Modal from '@/components/Aside/Modal';
 import { useAside } from './useAside';
 import * as styles from './style.css';
 
-const BookingMain = () => {
+const Main = () => {
   const {
     selectedDate,
+    selectedTime,
     currentDate,
+    selectedDateText,
     currentMonthText,
     bookingData,
     timeSelectionData,
+    isModalOpen,
     actions
   } = useAside();
 
   return (
     <div className={styles.booking.container}>
-      {/* 왼쪽 예약 정보 사이드바 */}
       <Aside
         type="booking"
         position="left"
         data={bookingData}
-        actions={{
-          onEdit: actions.handleEditBooking,
-          onCancel: actions.handleCancelBooking
-        }}
       />
 
-      {/* 가운데 달력 섹션 */}
       <CalendarSection
         selectedDate={selectedDate}
         onDateSelect={actions.setSelectedDate}
@@ -36,7 +34,6 @@ const BookingMain = () => {
         onNextMonth={actions.goToNextMonth}
       />
 
-      {/* 오른쪽 시간 선택 사이드바 */}
       <Aside
         type="timeSelection"
         position="right"
@@ -46,8 +43,15 @@ const BookingMain = () => {
           onBooking: actions.handleNewBooking,
         }}
       />
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={actions.closeModal}
+        selectedDate={selectedDateText}
+        selectedTime={selectedTime}
+      />
     </div>
   );
 };
 
-export default BookingMain;
+export default Main;

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import * as styles from './Calendar.css';
 
-interface CalendarSectionProps {
+interface CalendarProps {
   selectedDate: number | null;
   onDateSelect: (date: number) => void;
   currentMonth?: string;
@@ -11,7 +11,7 @@ interface CalendarSectionProps {
   onNextMonth?: () => void;
 }
 
-const CalendarSection: React.FC<CalendarSectionProps> = ({
+const Calendar: React.FC<CalendarProps> = ({
   selectedDate,
   onDateSelect,
   currentMonth = "2025.07",
@@ -141,4 +141,4 @@ const CalendarSection: React.FC<CalendarSectionProps> = ({
   );
 };
 
-export default CalendarSection;
+export default Calendar;

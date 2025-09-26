@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
-import Modal from './Modal';
-import * as styles from './style.css';
+import React, { useState } from "react";
+import Modal from "./Modal";
+import * as styles from "./style.css";
+import { useRequestLogout } from "@/services/auth/auth.mutation";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import Sad from "@/assets/sad-gray.png";
+import { Toastify } from "../Toastify";
 
-type AsideType = 'booking' | 'timeSelection';
+type AsideType = "booking" | "timeSelection";
 
 interface User {
   id: string;
@@ -22,21 +27,21 @@ interface TimeSelectionData {
 
 interface BaseAsideProps {
   type: AsideType;
-  position: 'left' | 'right';
+  position: "left" | "right";
   user?: User | null;
+  isLoggedIn?: boolean;
 }
 
 interface BookingAsideProps extends BaseAsideProps {
-  type: 'booking';
-  data: BookingData;
+  type: "booking";
+  data?: BookingData;
   actions?: {
-    onEdit?: () => void;
-    onCancel?: () => void;
+    onLogin?: () => void;
   };
 }
 
 interface TimeSelectionAsideProps extends BaseAsideProps {
-  type: 'timeSelection';
+  type: "timeSelection";
   data: TimeSelectionData;
   actions: {
     onTimeSelect: (time: string) => void;
@@ -47,42 +52,87 @@ interface TimeSelectionAsideProps extends BaseAsideProps {
 type AsideProps = BookingAsideProps | TimeSelectionAsideProps;
 
 const Aside: React.FC<AsideProps> = (props) => {
-  const { type, position } = props;
+  const { type, position, isLoggedIn: propIsLoggedIn = false } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const { isLoggedIn: authIsLoggedIn, checkAuthStatus } = useAuth();
+  const { mutate: logout, isPending } = useRequestLogout();
+
+  const isLoggedIn = propIsLoggedIn || authIsLoggedIn;
+
   const containerClass = `
     ${styles.aside.container}
-    ${position === 'left' ? styles.aside.leftPosition : styles.aside.rightPosition}
+    ${
+      position === "left"
+        ? styles.aside.leftPosition
+        : styles.aside.rightPosition
+    }
   `;
 
+  const handleLogoutClick = () => {
+    const confirmLogout = window.confirm("정말 로그아웃을 하시겠습니까?");
+
+    if (confirmLogout) {
+      logout(undefined, {
+        onSuccess: () => {
+          checkAuthStatus();
+          Toastify({ type: "info", content: "로그아웃 되었습니다." });
+        },
+        onError: () => {
+          checkAuthStatus();
+        },
+      });
+    }
+  };
+
   const handleBookingClick = () => {
-    setIsModalOpen(true);
+    if (type === "timeSelection") {
+      const { actions } = props as TimeSelectionAsideProps;
+      if (actions.onBooking) {
+        actions.onBooking();
+      } else {
+        setIsModalOpen(true);
+      }
+    }
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
 
-  if (type === 'booking') {
-    const { data } = props as BookingAsideProps;
-    
+  if (type === "booking") {
     return (
       <div className={containerClass}>
         <div className={styles.aside.header}>
-          <h2 className={styles.aside.title}>
-            Weesh
-          </h2>
-          <p className={styles.aside.subtitle}>
-            {data.bookingDate} {data.bookingTime} 예약됨
-          </p>
+          <h2 className={styles.aside.title}>Weesh</h2>
         </div>
+        {isLoggedIn ? (
+            <div className={styles.aside.buttonGroup}>
+              <button
+                className={styles.aside.bookingButton}
+                onClick={handleLogoutClick}
+                disabled={isPending}
+              >
+                {isPending ? "로그아웃 중..." : "로그아웃"}
+              </button>
+            </div>
+        ) : (
+          <div className={styles.aside.loginPrompt}>
+            <img src={Sad} alt="슬퍼요" width={80} />
+            <p className={styles.aside.loginMessage}>
+              상담 예약을 위해 로그인이 필요합니다.
+            </p>
+            <Link className={styles.aside.loginText} to="/login">
+              로그인하기
+            </Link>
+          </div>
+        )}
       </div>
     );
   }
 
-  if (type === 'timeSelection') {
+  if (type === "timeSelection") {
     const { data, actions } = props as TimeSelectionAsideProps;
-    
+
     return (
       <>
         <div className={containerClass}>
@@ -98,7 +148,11 @@ const Aside: React.FC<AsideProps> = (props) => {
                 onClick={() => actions.onTimeSelect(time)}
                 className={`
                   ${styles.aside.timeSlot}
-                  ${time === data.selectedTime ? styles.aside.selectedTimeSlot : ''}
+                  ${
+                    time === data.selectedTime
+                      ? styles.aside.selectedTimeSlot
+                      : ""
+                  }
                 `}
               >
                 {time}
@@ -106,12 +160,16 @@ const Aside: React.FC<AsideProps> = (props) => {
             ))}
           </div>
 
-          <button 
-            className={styles.aside.bookingButton}
+          <button
+            className={
+              !data.selectedTime || !isLoggedIn
+                ? styles.aside.bookingButtonDisabled
+                : styles.aside.bookingButton
+            }
             onClick={handleBookingClick}
-            disabled={!data.selectedTime}
+            disabled={!data.selectedTime || !isLoggedIn}
           >
-            예약하기
+            {isLoggedIn ? "예약하기" : "로그인 후 예약 가능"}
           </button>
         </div>
 

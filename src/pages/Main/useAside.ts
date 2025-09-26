@@ -20,6 +20,7 @@ interface UseAsideReturn {
     selectedDate: string;
     timeSlots: string[];
   };
+  isModalOpen: boolean;
   actions: {
     setSelectedDate: (date: number) => void;
     setSelectedTime: (time: string) => void;
@@ -28,6 +29,7 @@ interface UseAsideReturn {
     handleEditBooking: () => void;
     handleCancelBooking: () => void;
     handleNewBooking: () => void;
+    closeModal: () => void;
   };
 }
 
@@ -43,6 +45,8 @@ export const useAside = (
     return isCurrentMonth ? today.getDate() : null;
   });
   const [selectedTime, setSelectedTime] = useState("08:40 ~ 09:30");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
   const timeSlots = useMemo(
     () => [
       "08:40 ~ 09:30",
@@ -58,42 +62,37 @@ export const useAside = (
     ],
     [],
   );
+
   const currentMonthText = useMemo(() => {
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, "0");
     return `${year}.${month}`;
   }, [currentDate]);
+
   const selectedDateText = useMemo(() => {
     if (!selectedDate) return "날짜를 선택해주세요";
     const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const dateObj = new Date(year, month, selectedDate);
-    const dayNames = [
-      "일요일",
-      "월요일",
-      "화요일",
-      "수요일",
-      "목요일",
-      "금요일",
-      "토요일",
-    ];
-    const dayName = dayNames[dateObj.getDay()];
-    const monthName = month + 1;
-    return `${monthName}월 ${selectedDate}일 ${dayName}`;
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(selectedDate).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   }, [selectedDate, currentDate]);
+
   const bookingData = useMemo(() => {
     const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
-    const defaultBookingDate = selectedDate
-      ? `${year}년 ${month}월 ${selectedDate}일`
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = selectedDate ? String(selectedDate).padStart(2, "0") : null;
+    const defaultBookingDate = day
+      ? `${year}-${month}-${day}`
       : "날짜 미선택";
+    
     return {
-      studentId: initialBookingData?.studentId || "2105",
-      studentName: initialBookingData?.studentName || "김은찬",
+      studentId: initialBookingData?.studentId || "0000",
+      studentName: initialBookingData?.studentName || "홍길동",
       bookingDate: initialBookingData?.bookingDate || defaultBookingDate,
-      bookingTime: initialBookingData?.bookingTime || "9:00",
+      bookingTime: initialBookingData?.bookingTime || selectedTime,
     };
-  }, [initialBookingData, currentDate, selectedDate]);
+  }, [initialBookingData, currentDate, selectedDate, selectedTime]);
+
   const timeSelectionData = useMemo(
     () => ({
       selectedTime,
@@ -102,66 +101,52 @@ export const useAside = (
     }),
     [selectedTime, selectedDateText, timeSlots],
   );
+
   const goToPrevMonth = useCallback(() => {
     setCurrentDate((prevDate) => {
       const newDate = new Date(prevDate);
       newDate.setMonth(newDate.getMonth() - 1);
       setSelectedDate(null);
-      console.log(
-        `이전 달로 이동: ${newDate.getFullYear()}년 ${
-          newDate.getMonth() + 1
-        }월`,
-      );
       return newDate;
     });
   }, []);
+
   const goToNextMonth = useCallback(() => {
     setCurrentDate((prevDate) => {
       const newDate = new Date(prevDate);
       newDate.setMonth(newDate.getMonth() + 1);
       setSelectedDate(null);
-      console.log(
-        `다음 달로 이동: ${newDate.getFullYear()}년 ${
-          newDate.getMonth() + 1
-        }월`,
-      );
       return newDate;
     });
   }, []);
+
   const handleDateSelect = useCallback(
     (date: number) => {
       setSelectedDate(date);
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      console.log(`선택된 날짜: ${year}년 ${month}월 ${date}일`);
     },
     [currentDate],
   );
+
   const handleEditBooking = useCallback(() => {
     console.log("예약 수정:", bookingData);
   }, [bookingData]);
+
   const handleCancelBooking = useCallback(() => {
     console.log("예약 취소:", bookingData);
   }, [bookingData]);
+
   const handleNewBooking = useCallback(() => {
     if (!selectedDate) {
-      console.log("날짜를 선택해주세요");
+      alert("날짜를 선택해주세요");
       return;
     }
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
-    const newBookingInfo = {
-      date: selectedDate,
-      dateText: selectedDateText,
-      time: selectedTime,
-      fullDate: `${year}-${String(month).padStart(2, "0")}-${String(
-        selectedDate,
-      ).padStart(2, "0")}`,
-      timestamp: new Date().toISOString(),
-      studentInfo: bookingData,
-    };
-    console.log("새 예약 생성:", newBookingInfo);
-  }, [selectedDate, selectedDateText, selectedTime, bookingData, currentDate]);
+    setIsModalOpen(true);
+  }, [selectedDate]);
+
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
   return {
     selectedDate,
     selectedTime,
@@ -171,6 +156,7 @@ export const useAside = (
     timeSlots,
     bookingData,
     timeSelectionData,
+    isModalOpen,
     actions: {
       setSelectedDate: handleDateSelect,
       setSelectedTime,
@@ -179,6 +165,7 @@ export const useAside = (
       handleEditBooking,
       handleCancelBooking,
       handleNewBooking,
+      closeModal,
     },
   };
 };
